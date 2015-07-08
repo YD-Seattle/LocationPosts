@@ -12,7 +12,7 @@ if ( ! class_exists( 'YD_Plugin_Skeleton' ) ) {
 		protected static $writeable_properties = array();
 		protected $modules;
 
-		const VERSION    = '0.4a';
+		const VERSION    = '0.1';
 		const PREFIX     = 'yd_';
 		const DEBUG_MODE = false;
 
@@ -31,8 +31,7 @@ if ( ! class_exists( 'YD_Plugin_Skeleton' ) ) {
 
 			$this->modules = array(
 				'YD_Settings'    => YD_Settings::get_instance(),
-				'YD_CPT_Example' => YD_CPT_Example::get_instance(),
-				'YD_Cron'        => YD_Cron::get_instance()
+				'YD_LOCATION_CUSTOM_POST' => YD_LOCATION_CUSTOM_POST::get_instance()
 			);
 		}
 
@@ -47,9 +46,10 @@ if ( ! class_exists( 'YD_Plugin_Skeleton' ) ) {
 		 * @mvc Controller
 		 */
 		public static function load_resources() {
+
 			wp_register_script(
-				self::PREFIX . 'yd-plugin-skeleton',
-				plugins_url( 'javascript/yd-plugin-skeleton.js', dirname( __FILE__ ) ),
+				self::PREFIX . 'yd-location-post-edit',
+				plugins_url( 'javascript/yd-location-post-edit.js', dirname( __FILE__ ) ),
 				array( 'jquery' ),
 				self::VERSION,
 				true
@@ -63,11 +63,15 @@ if ( ! class_exists( 'YD_Plugin_Skeleton' ) ) {
 				'all'
 			);
 
+			// If the user is on the admin page (not if the user is an admin! unbelievable...)
 			if ( is_admin() ) {
 				wp_enqueue_style( self::PREFIX . 'admin' );
+				wp_enqueue_script( self::PREFIX . 'yd-location-post-edit' );
 			} else {
-				wp_enqueue_script( self::PREFIX . 'yd-plugin-skeleton' );
+				// TODO load the other script ;)
 			}
+			
+			
 		}
 
 		/**

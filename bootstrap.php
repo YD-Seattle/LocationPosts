@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-define( 'YD_NAME',                 'YD Plugin Skeleton' );
+define( 'YD_NAME',                 'YD Location Posts' );
 define( 'YD_REQUIRED_PHP_VERSION', '5.3' );                          // because of get_called_class()
 define( 'YD_REQUIRED_WP_VERSION',  '3.1' );                          // because of esc_textarea()
 
@@ -53,9 +53,8 @@ if ( yd_requirements_met() ) {
 	require_once( __DIR__ . '/classes/yd-plugin-skeleton.php' );
 	require_once( __DIR__ . '/includes/yd-admin-notice-helper/yd-admin-notice-helper.php' );
 	require_once( __DIR__ . '/classes/yd-custom-post-type.php' );
-	require_once( __DIR__ . '/classes/yd-cpt-example.php' );
+	require_once( __DIR__ . '/classes/yd-location-custom-post.php' );
 	require_once( __DIR__ . '/classes/yd-settings.php' );
-	require_once( __DIR__ . '/classes/yd-cron.php' );
 	require_once( __DIR__ . '/classes/yd-instance-class.php' );
 
 	if ( class_exists( 'YD_Plugin_Skeleton' ) ) {

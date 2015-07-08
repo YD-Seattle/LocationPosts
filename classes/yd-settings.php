@@ -140,18 +140,13 @@ if ( ! class_exists( 'YD_Settings' ) ) {
 		 * @return array
 		 */
 		protected static function get_default_settings() {
-			$basic = array(
-				'field-example1' => ''
-			);
-
-			$advanced = array(
-				'field-example2' => ''
+			$required = array(
+				'yd-google-maps-api-key' => ''
 			);
 
 			return array(
 				'db-version' => '0',
-				'basic'      => $basic,
-				'advanced'   => $advanced
+				'required'      => $required
 			);
 		}
 
@@ -180,7 +175,6 @@ if ( ! class_exists( 'YD_Settings' ) ) {
 		 * @return array
 		 */
 		public static function add_plugin_action_links( $links ) {
-			// array_unshift( $links, '<a href="http://wordpress.org/extend/plugins/wordpress-plugin-skeleton/faq/">Help</a>' );
 			array_unshift( $links, '<a href="options-general.php?page=' . 'yd_settings">Settings</a>' );
 
 			return $links;
@@ -225,41 +219,20 @@ if ( ! class_exists( 'YD_Settings' ) ) {
 			 * Basic Section
 			 */
 			add_settings_section(
-				'yd_section-basic',
-				'Basic Settings',
+				'yd_section-required',
+				'Required Settings',
 				__CLASS__ . '::markup_section_headers',
 				'yd_settings'
 			);
 
 			add_settings_field(
-				'yd_field-example1',
-				'Example Field 1',
+				'yd-google-maps-api-key',
+				'Google Maps API Key',
 				array( $this, 'markup_fields' ),
 				'yd_settings',
-				'yd_section-basic',
-				array( 'label_for' => 'yd_field-example1' )
+				'yd_section-required',
+				array( 'label_for' => 'yd-google-maps-api-key' )
 			);
-
-
-			/*
-			 * Advanced Section
-			 */
-			add_settings_section(
-				'yd_section-advanced',
-				'Advanced Settings',
-				__CLASS__ . '::markup_section_headers',
-				'yd_settings'
-			);
-
-			add_settings_field(
-				'yd_field-example2',
-				'Example Field 2',
-				array( $this, 'markup_fields' ),
-				'yd_settings',
-				'yd_section-advanced',
-				array( 'label_for' => 'yd_field-example2' )
-			);
-
 
 			// The settings container
 			register_setting(
@@ -277,7 +250,7 @@ if ( ! class_exists( 'YD_Settings' ) ) {
 		 * @param array $section
 		 */
 		public static function markup_section_headers( $section ) {
-			echo self::render_template( 'yd-settings/page-settings-section-headers.php', array( 'section' => $section ), 'always' );
+			// echo self::render_template( 'yd-settings/page-settings-section-headers.php', array( 'section' => $section ), 'always' );
 		}
 
 		/**
@@ -289,7 +262,7 @@ if ( ! class_exists( 'YD_Settings' ) ) {
 		 */
 		public function markup_fields( $field ) {
 			switch ( $field['label_for'] ) {
-				case 'yd_field-example1':
+				case 'yd-google-maps-api-key':
 					// Do any extra processing here
 					break;
 			}
@@ -317,17 +290,17 @@ if ( ! class_exists( 'YD_Settings' ) ) {
 			 * Basic Settings
 			 */
 
-			if ( strcmp( $new_settings['basic']['field-example1'], 'valid data' ) !== 0 ) {
-				add_notice( 'Example 1 must equal "valid data"', 'error' );
-				$new_settings['basic']['field-example1'] = self::$default_settings['basic']['field-example1'];
-			}
+			// if ( strcmp( $new_settings['basic']['field-example1'], 'valid data' ) !== 0 ) {
+			// 	add_notice( 'Example 1 must equal "valid data"', 'error' );
+			// 	$new_settings['basic']['field-example1'] = self::$default_settings['basic']['field-example1'];
+			// }
 
 
 			/*
 			 * Advanced Settings
 			 */
 
-			$new_settings['advanced']['field-example2'] = absint( $new_settings['advanced']['field-example2'] );
+			// $new_settings['advanced']['field-example2'] = absint( $new_settings['advanced']['field-example2'] );
 
 
 			return $new_settings;

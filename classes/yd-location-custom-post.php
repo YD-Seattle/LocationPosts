@@ -1,19 +1,22 @@
 <?php
 
-if ( ! class_exists( 'YD_CPT_Example' ) ) {
+if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 
 	/**
 	 * Creates a custom post type and associated taxonomies
 	 */
-	class YD_CPT_Example extends YD_Module implements YD_Custom_Post_Type {
+	class YD_LOCATION_CUSTOM_POST extends YD_Module implements YD_Custom_Post_Type {
 		protected static $readable_properties  = array();
 		protected static $writeable_properties = array();
 
-		const POST_TYPE_NAME = 'YD Custom Post';
-		const POST_TYPE_SLUG = 'yd-custom-post';
-		const TAG_NAME       = 'YD Custom Taxonomy';
-		const TAG_SLUG       = 'yd-custom-tax';
+		const POST_TYPE_NAME = 'Location Post';
+		const POST_TYPE_SLUG = 'yd-location-post';
+		const TAG_NAME       = 'Location Taxonomy';
+		const TAG_SLUG       = 'yd-location-custom-tax';
 
+		const LOCATION_META_ID = 'yd-location-meta';
+		const LOCATION_LAT = 'yd-location-lat';
+		const LOCATION_LNG = 'yd-location-lng';
 
 		/*
 		 * Magic methods
@@ -89,7 +92,7 @@ if ( ! class_exists( 'YD_CPT_Example' ) ) {
 				'has_archive'          => false,
 				'rewrite'              => false,
 				'query_var'            => false,
-				'supports'             => array( 'title', 'editor', 'author', 'thumbnail', 'revisions' )
+				'supports'             => array( 'title', 'editor', 'thumbnail', 'revisions' )
 			);
 
 			return apply_filters( 'yd_post-type-params', $post_type_params );
@@ -133,8 +136,8 @@ if ( ! class_exists( 'YD_CPT_Example' ) ) {
 		 */
 		public static function add_meta_boxes() {
 			add_meta_box(
-				'yd_example-box',
-				'Example Box',
+				self::LOCATION_META_ID,
+				'Post Location',
 				__CLASS__ . '::markup_meta_boxes',
 				self::POST_TYPE_SLUG,
 				'normal',
@@ -152,19 +155,13 @@ if ( ! class_exists( 'YD_CPT_Example' ) ) {
 		 */
 		public static function markup_meta_boxes( $post, $box ) {
 			$variables = array();
-
+			// TODO: pass setting to view, if api key not set dont show map!
 			switch ( $box['id'] ) {
-				case 'yd_example-box':
-					$variables['exampleBoxField'] = get_post_meta( $post->ID, 'yd_example-box-field', true );
-					$view                         = 'yd-cpt-example/metabox-example-box.php';
+				case self::LOCATION_META_ID:
+					$variables[ self::LOCATION_LAT ] = get_post_meta( $post->ID, self::LOCATION_LAT, true );
+					$variables[ self::LOCATION_LNG ] = get_post_meta( $post->ID, self::LOCATION_LNG, true );
+					$view                         = 'yd-location-post/location-meta-box.php'; 
 					break;
-
-				/*
-				case 'yd_some-other-box':
-					$variables['someOtherField'] = get_post_meta( $post->ID, 'yd_some-other-field', true );
-				 	$view                        = 'yd-cpt-example/metabox-another-box.php';
-					break;
-				*/
 
 				default:
 					$view = false;
@@ -236,12 +233,12 @@ if ( ! class_exists( 'YD_CPT_Example' ) ) {
 		 * @param array $new_values
 		 */
 		protected static function save_custom_fields( $post_id, $new_values ) {
-			if ( isset( $new_values[ 'yd_example-box-field' ] ) ) {
-				if ( false ) { // some business logic check
-					update_post_meta( $post_id, 'yd_example-box-field', $new_values[ 'yd_example-box-field' ] );
-				} else {
-					add_notice( 'Example of failing validation', 'error' );
-				}
+
+			if ( isset( $new_values[ self::LOCATION_LAT ] ) ) {
+				update_post_meta( $post_id, self::LOCATION_LAT, $new_values[ self::LOCATION_LAT ] );
+			}
+			if ( isset( $new_values[ self::LOCATION_LNG ] ) ) {
+				update_post_meta( $post_id, self::LOCATION_LNG, $new_values[ self::LOCATION_LNG ] );
 			}
 		}
 
@@ -372,5 +369,5 @@ if ( ! class_exists( 'YD_CPT_Example' ) ) {
 		protected function is_valid( $property = 'all' ) {
 			return true;
 		}
-	} // end YD_CPT_Example
+	} // end YD_LOCATION_CUSTOM_POST
 }
