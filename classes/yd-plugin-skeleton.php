@@ -182,12 +182,7 @@ if ( ! class_exists( 'YD_Plugin_Skeleton' ) ) {
 		 * @mvc Controller
 		 */
 		public function init() {
-			try {
-				$instance_example = new YD_Instance_Class( 'Instance example', '42' );
-				//add_notice( $instance_example->foo .' '. $instance_example->bar );
-			} catch ( Exception $exception ) {
-				add_notice( __METHOD__ . ' error: ' . $exception->getMessage(), 'error' );
-			}
+			
 		}
 
 		/**

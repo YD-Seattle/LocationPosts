@@ -9,6 +9,9 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 		protected static $readable_properties  = array();
 		protected static $writeable_properties = array();
 
+		const VERSION    = '0.1';
+		const PREFIX     = 'yd_';
+
 		const POST_TYPE_NAME = 'Location Post';
 		const POST_TYPE_SLUG = 'yd-location-post';
 		const TAG_NAME       = 'Location Taxonomy';
@@ -79,9 +82,9 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 			$post_type_params = array(
 				'labels'               => $labels,
 				'singular_label'       => self::POST_TYPE_NAME,
-				'public'               => false,
+				'public'               => true,  // TODO: remove once done!
 				'exclude_from_search'  => true,
-				'publicly_queryable'   => false,
+				'publicly_queryable'   => true,
 				'show_ui'              => true,
 				'show_in_menu'         => true,
 				'register_meta_box_cb' => __CLASS__ . '::add_meta_boxes',
@@ -155,12 +158,11 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 		 */
 		public static function markup_meta_boxes( $post, $box ) {
 			$variables = array();
-			// TODO: pass setting to view, if api key not set dont show map!
 			switch ( $box['id'] ) {
 				case self::LOCATION_META_ID:
 					$variables[ self::LOCATION_LAT ] = get_post_meta( $post->ID, self::LOCATION_LAT, true );
 					$variables[ self::LOCATION_LNG ] = get_post_meta( $post->ID, self::LOCATION_LNG, true );
-					$view                         = 'yd-location-post/location-meta-box.php'; 
+					$view                         = 'yd-location-post/location-meta-box.php';
 					break;
 
 				default:
@@ -243,53 +245,73 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 		}
 
 		/**
-		 * Defines the [yd-cpt-shortcode] shortcode
+		 * Defines the [POST_TYPE_SLUG] shortcode
 		 *
 		 * @mvc Controller
 		 *
 		 * @param array $attributes
-		 * return string
+		 * @return string
 		 */
-		public static function cpt_shortcode_example( $attributes ) {
-			$attributes = apply_filters( 'yd_cpt-shortcode-example-attributes', $attributes );
-			$attributes = self::validate_cpt_shortcode_example_attributes( $attributes );
+		public static function shortcode( $attributes ) {
+			$attributes = apply_filters( 'yd-shortcode-attributes', $attributes );
+			$attributes = self::validate_shortcode_attributes( $attributes );
 
-			return self::render_template( 'yd-cpt-example/shortcode-cpt-shortcode-example.php', array( 'attributes' => $attributes ) );
+			// Include the javascript and the styling for the shortcode
+			wp_register_script(
+				self::PREFIX . 'shortcode',
+				plugins_url( 'javascript/yd-shortcode.js', dirname( __FILE__ ) . '../' ),
+				array( 'jquery' ),
+				self::VERSION,
+				true
+			);
+			wp_enqueue_script( self::PREFIX . 'shortcode' );
+
+			wp_register_style(
+				self::PREFIX . 'shortcode',
+				plugins_url( 'css/shortcode.css', dirname( __FILE__ ) . '../' ),
+				array(),
+				self::VERSION,
+				'all'
+			);
+			wp_enqueue_style( self::PREFIX . 'shortcode' );
+			
+
+			return self::render_template( 'yd-location-post/shortcode.php', array( 'attributes' => $attributes ) );
 		}
 
 		/**
-		 * Validates the attributes for the [cpt-shortcode-example] shortcode
+		 * Validates the attributes for the [POST_TYPE_SLUG] shortcode
 		 *
 		 * @mvc Model
 		 *
 		 * @param array $attributes
-		 * return array
+		 * @return array
 		 */
-		protected static function validate_cpt_shortcode_example_attributes( $attributes ) {
-			$defaults   = self::get_default_cpt_shortcode_example_attributes();
+		protected static function validate_shortcode_attributes( $attributes ) {
+			$defaults   = self::get_default_shortcode_attributes();
 			$attributes = shortcode_atts( $defaults, $attributes );
+			// TODO: update the validation to check for location posts (or that the attributes contain valid post ids)
+			// if ( $attributes['foo'] != 'valid data' ) {
+			// 	$attributes['foo'] = $defaults['foo'];
+			// }
 
-			if ( $attributes['foo'] != 'valid data' ) {
-				$attributes['foo'] = $defaults['foo'];
-			}
-
-			return apply_filters( 'yd_validate-cpt-shortcode-example-attributes', $attributes );
+			return apply_filters( 'yd-validate-shortcode-attributes', $attributes );
 		}
 
 		/**
-		 * Defines the default arguments for the [cpt-shortcode-example] shortcode
+		 * Defines the default arguments for the [POST_TYPE_SLUG] shortcode
+		 * By Default, we will pull the latest location post to display on the map.
 		 *
 		 * @mvc Model
 		 *
 		 * @return array
 		 */
-		protected static function get_default_cpt_shortcode_example_attributes() {
+		protected static function get_default_shortcode_attributes() {
 			$attributes = array(
-				'foo' => 'bar',
-				'bar' => 'foo'
+				'mapsApiKey' => get_option( 'yd_settings' )[ 'required' ][ 'yd-google-maps-api-key' ]
 			);
 
-			return apply_filters( 'yd_default-cpt-shortcode-example-attributes', $attributes );
+			return apply_filters( 'yd-default-shortcode-attributes', $attributes );
 		}
 
 
@@ -309,9 +331,22 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 			add_filter( 'is_protected_meta',        __CLASS__ . '::is_protected_meta', 10, 3 );
 
 			add_action( 'init',                     array( $this, 'init' ) );
+			add_action( 'wp_json_server_before_serve', __CLASS__ . '::yd_api_init' );
 
-			add_shortcode( 'cpt-shortcode-example', __CLASS__ . '::cpt_shortcode_example' );
+			add_shortcode( self::POST_TYPE_SLUG, __CLASS__ . '::shortcode' );
 		}
+
+		/**
+		 *	Creates an instance of our Rest API.
+		 */
+		public static function yd_api_init() {
+			global $rest_api;
+			$rest_api = new YD_REST_API();
+			add_filter( 'json_endpoints', array( $rest_api, 'register_routes' ) );
+		}
+		
+
+		
 
 		/**
 		 * Prepares site to use the plugin during activation

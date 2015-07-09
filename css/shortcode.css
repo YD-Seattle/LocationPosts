@@ -1,0 +1,18 @@
+
+#yd-map-canvas {
+	height: 500px;
+}
+
+#yd-map-search {
+	margin-top: 16px;
+	margin-right: 16px;
+	width: 25%;
+	border: 1px solid transparent;
+	border-radius: 2px 0 0 2px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	height: 32px;
+	outline: none;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+	display: none;
+}
