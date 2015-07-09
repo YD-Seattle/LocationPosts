@@ -255,6 +255,7 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 		public static function shortcode( $attributes ) {
 			$attributes = apply_filters( 'yd-shortcode-attributes', $attributes );
 			$attributes = self::validate_shortcode_attributes( $attributes );
+			
 
 			// Include the javascript and the styling for the shortcode
 			wp_register_script(
@@ -282,18 +283,25 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 		/**
 		 * Validates the attributes for the [POST_TYPE_SLUG] shortcode
 		 *
-		 * @mvc Model
-		 *
 		 * @param array $attributes
 		 * @return array
 		 */
 		protected static function validate_shortcode_attributes( $attributes ) {
 			$defaults   = self::get_default_shortcode_attributes();
 			$attributes = shortcode_atts( $defaults, $attributes );
-			// TODO: update the validation to check for location posts (or that the attributes contain valid post ids)
-			// if ( $attributes['foo'] != 'valid data' ) {
-			// 	$attributes['foo'] = $defaults['foo'];
-			// }
+			$valid_types = array( 'all', 'bounds', 'single' );
+			if ( !in_array( $attributes[ 'type' ], $valid_types ) ) {
+				$attributes[ 'type' ] = $defaults[ 'type' ];
+			}
+			// If the type is bounds, then we must have the `bounds` attribute. If `bounds` attr doesnt exist,
+			// then just default to all
+			if ( $attributes[ 'type' ] == 'bounds' && !isset( $attributes[ 'bounds' ] ) ) {
+				$attributes[ 'type' ] = 'all';
+			}
+			// If the type is single, then we must have a single post id. If not then default to all.
+			if ( $attributes[ 'type' ] == 'single' && !isset( $attributes[ 'post_id' ] ) ) {
+				$attributes[ 'type' ] = 'all';
+			}
 
 			return apply_filters( 'yd-validate-shortcode-attributes', $attributes );
 		}
@@ -302,13 +310,14 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 		 * Defines the default arguments for the [POST_TYPE_SLUG] shortcode
 		 * By Default, we will pull the latest location post to display on the map.
 		 *
-		 * @mvc Model
-		 *
 		 * @return array
 		 */
 		protected static function get_default_shortcode_attributes() {
 			$attributes = array(
-				'mapsApiKey' => get_option( 'yd_settings' )[ 'required' ][ 'yd-google-maps-api-key' ]
+				'mapsApiKey' => get_option( 'yd_settings' )[ 'required' ][ 'yd-google-maps-api-key' ],
+				'type' => 'all',
+				'post_id' => null,
+				'bounds' => null
 			);
 
 			return apply_filters( 'yd-default-shortcode-attributes', $attributes );

@@ -4,7 +4,6 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 
 	class YD_REST_API {
 
-		const BASE_URI = '/yd';
 		const LOCATIONS_ALL_URI = '/yd/locations/all';
 		const LOCATIONS_BOUNDS_URI = '/yd/locations/bounds';
 		const LOCATION_SINGLE_URI = '/yd/location';
@@ -41,10 +40,6 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 				return new WP_Error( 'yd_rest_api_invalid_request', __( 'Invalid request parameters (bounds).' ), array( 'status' => 400 ) );
 			}
 			// query with bounds....
-			$bounds[0] = $bounds[0];
-			$bounds[1] = $bounds[1];
-			$bounds[2] = $bounds[2];
-			$bounds[3] = $bounds[3];
 			$query = array(
 				'post_type' => array( YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG ),
 				'meta_query' => array(
@@ -139,9 +134,9 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 			$post = get_object_vars( $post_data );
 			$filtered_post = array();
 			$filtered_post[ 'id' ] = $post[ 'ID' ];
-			$filtered_post[ 'post_title' ] = $post[ 'post_title' ];
-			$filtered_post[ 'post_type' ] = $post[ 'post_type' ];
-			$filtered_post[ 'post_content' ] = $post[ 'post_content' ];
+			$filtered_post[ 'title' ] = $post[ 'post_title' ];
+			$filtered_post[ 'type' ] = $post[ 'post_type' ];
+			$filtered_post[ 'content' ] = $post[ 'post_content' ];
 			$filtered_post[ 'lat' ] = get_post_meta( $post[ 'ID' ], YD_LOCATION_CUSTOM_POST::LOCATION_LAT, true );
 			$filtered_post[ 'lng' ] = get_post_meta( $post[ 'ID' ], YD_LOCATION_CUSTOM_POST::LOCATION_LNG, true );
 			if ( has_post_thumbnail( $post[ 'ID' ] ) ) {
