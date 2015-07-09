@@ -21,16 +21,21 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 		 * GET @ /wp-json/yd/locations
 		 * This is the function for handling get requets for our custom post type (Location Posts).
 		 *
-		 * @param  required q 			The type of query (currently available: 'all', 'ids', 'bounds' )
+		 * @param  required $q 			The type of query (currently available: 'all', 'ids', 'bounds' )
 		 * @param  optional $bounds   	Comma seperated list representing the geographical bounds of the map. [ sw_lat, sw_lng, ne_lat, ne_lng ]
-		 * @param  optional $post_ids     	Comma seperated list of post_ids
+		 * @param  optional $post_ids   Comma seperated list of post_ids
+		 * @param  optional $location_taxonomies  Comma seperated list of custom taxonomy slugs
 		 * @param  required $_headers 	Request headers
 		 */
-		public function get_yd_location_posts( $q, $post_ids = null, $bounds = null, $_headers, $type = YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG  ) {
+		public function get_yd_location_posts( 
+										$q, 
+										$bounds = null, 
+										$post_ids = null, 
+										$location_taxonomies = null,
+										$_headers, $type = YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG  ) {
 			if ( !isset( $q ) ) {
 				$q = 'all';
 			}
-			
 
 			$query = array();
 			// Compose the query based on the q param.
@@ -79,6 +84,18 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 					);
 					break;
 			}
+
+			if ( isset( $location_taxonomies ) ) {
+				// Need to add the taxonmy to the query
+				$taxonomies = array_map('trim', explode(',', $location_taxonomies) );
+				$query[ 'tax_query' ] = array(
+					array(
+						'taxonomy' => YD_LOCATION_CUSTOM_POST::TAG_SLUG,
+						'field'    => 'slug',
+						'terms'    => $taxonomies,
+					)
+				);
+			}
 			
 			
 			$post_query = new WP_Query();
@@ -103,6 +120,10 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 		 */
 		private static function filter_post_data( $post_data ) {
 			$post = get_object_vars( $post_data );
+			$post[ 'lat' ] = get_post_meta( $post[ 'ID' ], YD_LOCATION_CUSTOM_POST::LOCATION_LAT, true );
+			$post[ 'lng' ] = get_post_meta( $post[ 'ID' ], YD_LOCATION_CUSTOM_POST::LOCATION_LNG, true );
+			return $post;
+
 			$filtered_post = array();
 			$filtered_post[ 'id' ] = $post[ 'ID' ];
 			$filtered_post[ 'title' ] = $post[ 'post_title' ];
