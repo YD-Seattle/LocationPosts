@@ -289,18 +289,18 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 		protected static function validate_shortcode_attributes( $attributes ) {
 			$defaults   = self::get_default_shortcode_attributes();
 			$attributes = shortcode_atts( $defaults, $attributes );
-			$valid_types = array( 'all', 'bounds', 'single' );
-			if ( !in_array( $attributes[ 'type' ], $valid_types ) ) {
-				$attributes[ 'type' ] = $defaults[ 'type' ];
+			$valid_types = array( 'all', 'bounds', 'post_ids' );
+			if ( !in_array( $attributes[ 'q' ], $valid_types ) ) {
+				$attributes[ 'q' ] = $defaults[ 'q' ];
 			}
-			// If the type is bounds, then we must have the `bounds` attribute. If `bounds` attr doesnt exist,
+			// If the query type is bounds, then we must have the `bounds` attribute. If `bounds` attr doesnt exist,
 			// then just default to all
-			if ( $attributes[ 'type' ] == 'bounds' && !isset( $attributes[ 'bounds' ] ) ) {
-				$attributes[ 'type' ] = 'all';
+			if ( $attributes[ 'q' ] == 'bounds' && !isset( $attributes[ 'bounds' ] ) ) {
+				$attributes[ 'q' ] = 'all';
 			}
-			// If the type is single, then we must have a single post id. If not then default to all.
-			if ( $attributes[ 'type' ] == 'single' && !isset( $attributes[ 'post_id' ] ) ) {
-				$attributes[ 'type' ] = 'all';
+			// If the query type is post_ids, then we must have a post_ids. If not then default to all.
+			if ( $attributes[ 'q' ] == 'post_ids' && !isset( $attributes[ 'post_ids' ] ) ) {
+				$attributes[ 'q' ] = 'all';
 			}
 
 			return apply_filters( 'yd-validate-shortcode-attributes', $attributes );
@@ -315,8 +315,8 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 		protected static function get_default_shortcode_attributes() {
 			$attributes = array(
 				'mapsApiKey' => get_option( 'yd_settings' )[ 'required' ][ 'yd-google-maps-api-key' ],
-				'type' => 'all',
-				'post_id' => null,
+				'q' => 'all',
+				'post_ids' => null,
 				'bounds' => null
 			);
 

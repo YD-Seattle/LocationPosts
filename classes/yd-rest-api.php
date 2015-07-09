@@ -4,60 +4,83 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 
 	class YD_REST_API {
 
-		const LOCATIONS_ALL_URI = '/yd/locations/all';
-		const LOCATIONS_BOUNDS_URI = '/yd/locations/bounds';
-		const LOCATION_SINGLE_URI = '/yd/location';
+		const RESOURCE_URI = '/yd/locations';
 
 		/**
 		 *	Register all of our routes.
 		 */
 		public function register_routes( $routes ) {
-			$routes[ self::LOCATIONS_BOUNDS_URI ] = array(
-				array( array( $this, 'get_yd_posts_by_bounds' ), WP_JSON_Server::READABLE ),
+			$routes[ self::RESOURCE_URI ] = array(
+				array( array( $this, 'get_yd_location_posts' ), WP_JSON_Server::READABLE ),
 			);
-			$routes[ self::LOCATIONS_ALL_URI ] = array(
-				array( array( $this, 'get_yd_posts_all' ), WP_JSON_Server::READABLE ),
-			);
-			$routes[ self::LOCATION_SINGLE_URI ] = array(
-				array( array( $this, 'get_yd_posts_single' ), WP_JSON_Server::READABLE ),
-			);
+
 			return $routes;
 		}
 
 		/**
-		 * GET @ /wp-json/yd/locations/bounds
-		 * @param  string $q   Comma seperated list representing the geographical bounds of the map. [ sw_lat, sw_lng, ne_lat, ne_lng ]
-		 * @param  [type] $_headers Request headers
-		 * @param  string $type     [description]
-		 * @return [type]           [description]
+		 * GET @ /wp-json/yd/locations
+		 * This is the function for handling get requets for our custom post type (Location Posts).
+		 *
+		 * @param  required q 			The type of query (currently available: 'all', 'ids', 'bounds' )
+		 * @param  optional $bounds   	Comma seperated list representing the geographical bounds of the map. [ sw_lat, sw_lng, ne_lat, ne_lng ]
+		 * @param  optional $post_ids     	Comma seperated list of post_ids
+		 * @param  required $_headers 	Request headers
 		 */
-		public function get_yd_posts_by_bounds( $q, $_headers, $type = YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG  ) {
+		public function get_yd_location_posts( $q, $post_ids = null, $bounds = null, $_headers, $type = YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG  ) {
 			if ( !isset( $q ) ) {
-				return new WP_Error( 'yd_rest_api_invalid_request', __( 'Invalid request parameters (missing bounds).' ), array( 'status' => 400 ) );
+				return new WP_Error( 'yd_rest_api_invalid_request', __( 'Invalid request parameters (missing type).' ), array( 'status' => 400 ) );
 			}
-			$bounds = explode(',', $q);
-			if ( self::validate_bounds( $bounds ) == false ) {
-				return new WP_Error( 'yd_rest_api_invalid_request', __( 'Invalid request parameters (bounds).' ), array( 'status' => 400 ) );
-			}
-			// query with bounds....
-			$query = array(
-				'post_type' => array( YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG ),
-				'meta_query' => array(
-						array(
-							'key' => YD_LOCATION_CUSTOM_POST::LOCATION_LAT,
-							'value' => array( $bounds[0], $bounds[2] ),
-							'compare' => 'BETWEEN',
-							'type' => 'SIGNED'
-						),
-						array(
-							'key' => YD_LOCATION_CUSTOM_POST::LOCATION_LNG,
-							'value' => array( $bounds[1], $bounds[3] ),
-							'compare' => 'BETWEEN',
-							'type' => 'SIGNED'
-						)
-					)
-			);
+			
 
+			$query = array();
+			// Compose the query based on the q param.
+			switch ( $q ) {
+				case 'post_ids':
+					if ( !isset( $post_ids ) ) {
+						return new WP_Error( 'yd_rest_api_invalid_request', __( 'Invalid request parameters (missing parameter `post_ids` for type=\'post_ids\').' ), array( 'status' => 400 ) );	
+					}
+					$post_ids = array_map('trim', explode(',', $post_ids) );
+					$query = array(
+						'post_type' => array( YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG ),
+						'post__in' => $post_ids  // NOTE: if $ids is an empty array, post__in will return all posts
+					);
+					break;
+				case 'bounds':
+					if ( !isset( $bounds ) ) {
+						return new WP_Error( 'yd_rest_api_invalid_request', __( 'Invalid request parameters (missing parameter `bounds` for type=\'bounds\').' ), array( 'status' => 400 ) );	
+					}
+					$bounds = array_map('trim', explode(',', $bounds) );
+					if ( self::validate_bounds( $bounds ) == false ) {
+						return new WP_Error( 'yd_rest_api_invalid_request', __( 'Invalid request parameters (bounds).' ), array( 'status' => 400 ) );
+					}
+					// query with bounds....
+					$query = array(
+						'post_type' => array( YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG ),
+						'meta_query' => array(
+								array(
+									'key' => YD_LOCATION_CUSTOM_POST::LOCATION_LAT,
+									'value' => array( $bounds[0], $bounds[2] ),
+									'compare' => 'BETWEEN',
+									'type' => 'SIGNED'
+								),
+								array(
+									'key' => YD_LOCATION_CUSTOM_POST::LOCATION_LNG,
+									'value' => array( $bounds[1], $bounds[3] ),
+									'compare' => 'BETWEEN',
+									'type' => 'SIGNED'
+								)
+							)
+					);
+					break;
+				default:
+					// Default to 'all'
+					$query = array(
+						'post_type' => array( YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG )
+					);
+					break;
+			}
+			
+			
 			$post_query = new WP_Query();
 			$posts_list = $post_query->query( $query );
 
@@ -72,58 +95,6 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 
 			return $response;
 		}
-
-		/**
-		 * GET @ /wp-json/yd/locations/all
-		 * @param  [type] $_headers Request headers
-		 * @param  string $type     [description]
-		 * @return [type]           [description]
-		 */
-		public function get_yd_posts_all( $_headers, $type = YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG  ) {
-			$query = array(
-				'post_type' => array( YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG )
-			);
-
-			$post_query = new WP_Query();
-			$posts_list = $post_query->query( $query );
-
-			$response   = new WP_JSON_Response();
-			
-			$results = array( 'posts' => array() );
-			foreach ( $posts_list as $post ) {
-				$results[ 'posts' ][] = self::filter_post_data( $post );
-			}
-
-			$response->set_data( $results );
-
-			return $response;
-		}
-
-		/**
-		 * GET @ /wp-json/yd/location
-		 * @param  number $id 		The post id
-		 * @param  [type] $_headers Request headers
-		 * @param  string $type     [description]
-		 * @return [type]           [description]
-		 */
-		public function get_yd_posts_single( $id, $_headers, $type = YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG  ) {
-			if ( !isset( $id ) ) {
-				return new WP_Error( 'yd_rest_api_invalid_request', __( 'Invalid request parameters (missing id).' ), array( 'status' => 400 ) );
-			}
-
-			$response   = new WP_JSON_Response();
-			$results = array( 'post' => null );
-			$post = get_post( $id );
-			if ( is_object( $post ) && get_post_type( $post ) == $type ) {
-				$filtered_post = self::filter_post_data( $post );
-				$results[ 'post' ] = $filtered_post;
-			}
-			$response->set_data( $results );
-
-			return $response;
-		}
-
-
 
 		/**
 		 *	Helper to filter which data gets sent back to frontend, also attaches
@@ -163,7 +134,7 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 				return false;
 			if ( doubleval($bounds[3]) < -180 || doubleval($bounds[3]) > 180 )
 				return false;
-			return true;  // TODO: check that sw is sw wrt ne
+			return true;  // TODO: check that sw is sw wrt ne?
 		}
 	}
 
