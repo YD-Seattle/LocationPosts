@@ -95,7 +95,7 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 				'has_archive'          => false,
 				'rewrite'              => false,
 				'query_var'            => false,
-				'supports'             => array( 'title', 'editor', 'thumbnail', 'revisions' )
+				'supports'             => array( 'title', 'editor', 'thumbnail' )
 			);
 
 			return apply_filters( 'yd_post-type-params', $post_type_params );

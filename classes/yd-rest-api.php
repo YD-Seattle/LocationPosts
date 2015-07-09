@@ -28,7 +28,7 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 		 */
 		public function get_yd_location_posts( $q, $post_ids = null, $bounds = null, $_headers, $type = YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG  ) {
 			if ( !isset( $q ) ) {
-				return new WP_Error( 'yd_rest_api_invalid_request', __( 'Invalid request parameters (missing type).' ), array( 'status' => 400 ) );
+				$q = 'all';
 			}
 			
 
