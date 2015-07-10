@@ -1,6 +1,15 @@
-# Y-Designs WordPress Plugin - Location Posts
+# Location Posts - A Y-Designs WordPress Plugin
 
 The Location Posts plugin is a simple, yet flexible WordPress plugin that ties location based information to a map. You can insert a map within any existing page or post, and also choose which Location Posts you would like to have displayed on the map. This can be something as simple as displaying all of your Location Posts on a map. A more complex example would be displaying only those posts that lie within a geographical bound.
+
+##### [- Getting Started](#user-content-getting-started--installation)
+##### [- How to Use](#user-content-how-to-use)
+##### [- Parameters](#user-content-parameters)
+##### [- Theme Customization](#user-content-theme-customization)
+##### [- Compatible Plugins](#user-content-compatible-plugins)
+##### [- Developers](#user-content-developers)
+
+
 
 ## What can I use this plugin for?
 
