@@ -87,6 +87,7 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 				'publicly_queryable'   => true,
 				'show_ui'              => true,
 				'show_in_menu'         => true,
+				'menu_icon'			   => 'dashicons-location',
 				'register_meta_box_cb' => __CLASS__ . '::add_meta_boxes',
 				'taxonomies'           => array( self::TAG_SLUG ),
 				'menu_position'        => 20,
@@ -162,7 +163,7 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 				case self::LOCATION_META_ID:
 					$variables[ self::LOCATION_LAT ] = get_post_meta( $post->ID, self::LOCATION_LAT, true );
 					$variables[ self::LOCATION_LNG ] = get_post_meta( $post->ID, self::LOCATION_LNG, true );
-					$view                         = 'yd-location-post/location-meta-box.php';
+					$view                         = self.POST_TYPE_SLUG.'/location-meta-box.php';
 					break;
 
 				default:
