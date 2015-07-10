@@ -17,17 +17,17 @@ This plugin has a dependency, so you will also have to install the WP REST API p
 
 Once both plugins are installed, active that WP REST API plugin and then active that YD Location Posts plugin. Your plugins screen should look something like this:
 
-![Plugins Menu](TODO)
+![Plugins Menu](./images/yd-location-post-plugins.png)
 
 ## How to Use
 
 **Important!** The first step to using this plugin is to add your Google Maps API key to the YD Location Maps plugin settings. [Need help getting an API key?](https://developers.google.com/maps/documentation/javascript/tutorial#api_key)
 
-![YD Location Posts - Settings](TODO)
+![YD Location Posts - Settings](./images/yd-location-posts-settings.png)
 
 Now let's start the fun part! You should see a new item on the admin sidebar labeled `Location Posts`. Hover over this and click `Add New`.
 
-![YD Location Posts - New Post](TODO)
+![YD Location Posts - New Post](./images/yd-location-posts-new-post.png)
 
 Here you can add content just like you would a normal Post. There is also a map with a marker on it. Drag this marker to a location of your choosing. This will tie a location to the content you add in your Location Post.
 
@@ -35,13 +35,15 @@ After saving and publishing your Location Post, you will probably want to see th
 ```
 [yd-location-post]
 ```
-![YD Location Posts - Sample Page Edit](TODO)
+![YD Location Posts - Sample Page Edit](./images/yd-location-posts-sample-page-edit.png)
 
 In this example, I created/published two Location Posts. By previewing the page you will see both of those locations show up on the goolge map. Clicking on any of the locations will bring up a modal containing the information in that Location Post (such as title, description, image, etc...). Note: this part is fully customizable! You may display whatever information, in any format that you like. Checkout the Templating section.
 
-![YD Location Posts - Sample Page](TODO)
+![YD Location Posts - Sample Page](./images/yd-location-posts-sample-page.png)
 
-![YD Location Posts - Sample Content](TODO)
+
+Sample of content displayed when a user clicks on a marker.
+![YD Location Posts - Sample Content](./images/yd-location-posts-content.png)
 
 ## Parameters
 
@@ -80,6 +82,8 @@ Customize the way data is presented by overwriting our template in your own them
 ```
 /wp-content/themes/your-theme-name/yd-location-post/location-post-template.php
 ```
+![YD Location Posts - Templating Directory](./images/yd-location-post-overwrite-template.png)
+
 This file will be a [handlebars template](http://handlebarsjs.com/). You will have access to all of the fields in your Location Posts, as well as any custom data you have added via the ACF plugin. If you are not sure what fields you have access to, try inspecting the requests being sent for the JSON response to fetch these posts. Below is a sample of what data you might have access to in your handlebars template.
 ```json
 "ID": 25,
@@ -106,3 +110,13 @@ Note: the template you are overwriting is the template that is displayed once a 
 ## Compatible Plugins
 
 #### [Advanced Custom Fields (ACF)](http://www.advancedcustomfields.com/)
+
+## Developers
+
+Developer Docs are coming soon!
+
+
+***************************************************************************************************
+
+
+Overall plugin structure cloned from [this skeleton](https://github.com/iandunn/WordPress-Plugin-Skeleton). Thanks!
