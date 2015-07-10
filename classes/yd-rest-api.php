@@ -22,7 +22,7 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 		 * This is the function for handling get requets for our custom post type (Location Posts).
 		 *
 		 * @param  required $q 			The type of query (currently available: 'all', 'ids', 'bounds' )
-		 * @param  optional $bounds   	Comma seperated list representing the geographical bounds of the map. [ sw_lat, sw_lng, ne_lat, ne_lng ]
+		 * @param  optional $bounds   	Comma seperated list representing the geographical bounds of the map. [ sw_lng, sw_lat, ne_lng, ne_lat ]
 		 * @param  optional $post_ids   Comma seperated list of post_ids
 		 * @param  optional $location_taxonomies  Comma seperated list of custom taxonomy slugs
 		 * @param  required $_headers 	Request headers
@@ -64,15 +64,15 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 						'meta_query' => array(
 								array(
 									'key' 	  => YD_LOCATION_CUSTOM_POST::LOCATION_LAT,
-									'value'   => array( $bounds[0], $bounds[2] ),
+									'value'   => array( doubleval($bounds[1]), doubleval($bounds[3]) ),
 									'compare' => 'BETWEEN',
-									'type'	  => 'SIGNED'
+									'type'	  => 'DECIMAL(18,9)'  // This took me an hour to figure out (had to specify the precision on the DECIMAL otherwise it was interpretting as int)
 								),
 								array(
 									'key' 	  => YD_LOCATION_CUSTOM_POST::LOCATION_LNG,
-									'value'   => array( $bounds[1], $bounds[3] ),
+									'value'   => array( doubleval($bounds[0]), doubleval($bounds[2]) ),
 									'compare' => 'BETWEEN',
-									'type' 	  => 'SIGNED'
+									'type' 	  => 'DECIMAL(18,9)'
 								)
 							)
 					);
@@ -125,7 +125,7 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 			if ( function_exists( 'get_fields' ) ) {  // ACF
 				// Check if there are any acf fields, if so attach them to the post data.
 				$fields = get_fields( $post['ID'] );
-				$post[ 'custom_fields' ] = $fields;	
+				$post[ 'acf' ] = $fields;
 			}
 			if ( has_post_thumbnail( $post[ 'ID' ] ) ) {
 				$image = wp_get_attachment_image_src( get_post_thumbnail_id( $post[ 'ID' ] ), 'single-post-thumbnail' )[0];
@@ -136,7 +136,7 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 		}
 
 		/**
-		 * Helper method to check for valid bounds. Checks that we are given 4 points [ sw_lat, sw_lng, ne_lat, ne_lng ].
+		 * Helper method to check for valid bounds.
 		 * Also checks that these values are valid lat,lng:
 		 *	 Lat range: [-90, 90].
 		 *	 Lng range: [-180, 180].
@@ -144,13 +144,13 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 		protected static function validate_bounds( $bounds ) {
 			if ( count( $bounds ) != 4 )
 				return false;
-			if ( doubleval($bounds[0]) < -90 || doubleval($bounds[0]) > 90 )
+			if ( doubleval($bounds[1]) < -90 || doubleval($bounds[1]) > 90 )
 				return false;
-			if ( doubleval($bounds[2]) < -90 || doubleval($bounds[2]) > 90 )
+			if ( doubleval($bounds[3]) < -90 || doubleval($bounds[3]) > 90 )
 				return false;
-			if ( doubleval($bounds[1]) < -180 || doubleval($bounds[1]) > 180 )
+			if ( doubleval($bounds[0]) < -180 || doubleval($bounds[0]) > 180 )
 				return false;
-			if ( doubleval($bounds[3]) < -180 || doubleval($bounds[3]) > 180 )
+			if ( doubleval($bounds[2]) < -180 || doubleval($bounds[2]) > 180 )
 				return false;
 			return true;  // TODO: check that sw is sw wrt ne?
 		}

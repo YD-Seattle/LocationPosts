@@ -12,8 +12,8 @@ function ydWrapper( $ ) {
 		center: undefined,
 		marker: undefined,
 		search: undefined,
-		defaultLat: storedLat || -34.397,
-		defaultLng: storedLng || 150.644,
+		defaultLat: storedLat || 47.971582713343494,  // Default to Seattle =)
+		defaultLng: storedLng || -122.1947416984375
 	};
 	console.log( MapState );
 

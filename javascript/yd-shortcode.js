@@ -83,7 +83,6 @@ window.onload = function() {
 				this.post_ids = $('#yd-posts-data').attr('data-posts-data');
 			this.rest_endpoint = '/wp-json/yd/locations';
 			this.posts = [];  // keep track of which posts we are representing...
-			this.bounds_changed = false;  // Whether or not the bounds have changed due to user input.
 		}
 
 		/**

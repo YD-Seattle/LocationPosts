@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: YD Plugin Skeleton
+Plugin Name: YD Location Posts
 Depends: WP REST API
-Plugin URI:  NONE
-Description: This is simply a WP plugin starter.
+Plugin URI:  https://github.com/YD-Seattle/YDLocationPosts
+Description: Location Posts is a WordPress plugin that allows you to display custom post information over a map.
 Version:     0.1
 Author:      Y-Designs
 Author URI:  http://www.y-designs.com
@@ -33,7 +33,7 @@ function yd_requirements_met() {
 		return false;
 	}
 
-	// Dependency
+	// Dependency https://github.com/WP-API/WP-API/tree/1.2.2
 	if ( ! class_exists( 'WP_JSON_Server' ) ) {
 		return false;
 	}
@@ -58,7 +58,7 @@ function yd_init() {
 	if ( yd_requirements_met() ) {
 		require_once( __DIR__ . '/classes/yd-module.php' );
 		require_once( __DIR__ . '/classes/yd-plugin-skeleton.php' );
-		require_once( __DIR__ . '/includes/yd-admin-notice-helper/yd-admin-notice-helper.php' );
+		require_once( __DIR__ . '/classes/yd-admin-notice-helper.php' );
 		require_once( __DIR__ . '/classes/yd-rest-api.php' );
 		require_once( __DIR__ . '/classes/yd-custom-post-type.php' );
 		require_once( __DIR__ . '/classes/yd-location-custom-post.php' );

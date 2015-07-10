@@ -82,7 +82,7 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 			$post_type_params = array(
 				'labels'               => $labels,
 				'singular_label'       => self::POST_TYPE_NAME,
-				'public'               => true,  // TODO: remove once done!
+				'public'               => false,
 				'exclude_from_search'  => true,
 				'publicly_queryable'   => true,
 				'show_ui'              => true,
@@ -98,7 +98,7 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 				'supports'             => array( 'title', 'editor', 'thumbnail' )
 			);
 
-			return apply_filters( 'yd_post-type-params', $post_type_params );
+			return apply_filters( self::POST_TYPE_SLUG.'-type-params', $post_type_params );
 		}
 
 		/**
@@ -176,26 +176,12 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 		/**
 		 * Determines whether a meta key should be considered private or not
 		 *
-		 * @mvc Model
-		 *
 		 * @param bool $protected
 		 * @param string $meta_key
 		 * @param mixed $meta_type
 		 * @return bool
 		 */
 		public static function is_protected_meta( $protected, $meta_key, $meta_type ) {
-			switch( $meta_key ) {
-				case 'yd_example-box':
-				case 'yd_example-box2':
-					$protected = true;
-					break;
-
-				case 'yd_some-other-box':
-				case 'yd_some-other-box2':
-					$protected = false;
-					break;
-			}
-
 			return $protected;
 		}
 
@@ -287,9 +273,9 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 			);
 			wp_enqueue_style( self::PREFIX . 'shortcode' );
 			
-			$handlebars_template = self::render_template( 'yd-location-post/location-post-template.php' );
+			$handlebars_template = self::render_template( self::POST_TYPE_SLUG.'/location-post-template.php' );
 
-			return $handlebars_template . self::render_template( 'yd-location-post/shortcode.php', array( 'attributes' => $attributes ) );
+			return $handlebars_template . self::render_template( self::POST_TYPE_SLUG.'/shortcode.php', array( 'attributes' => $attributes ) );
 		}
 
 		/**
@@ -335,6 +321,22 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 			return apply_filters( 'yd-default-shortcode-attributes', $attributes );
 		}
 
+		/**
+		 *	Filter callback for adding the post ID to the columns of our post list view
+		 */
+		public static function custom_post_columns( $columns ){
+			$columns[ 'yd-location-post-id' ] = __('Location Post ID');
+			return $columns;
+		}
+
+		/**
+		 *	Action callback for telling what value to return for our custom columns
+		 */
+		public static function custom_post_columns_data( $column_name, $post_id ){
+			if( $column_name === 'yd-location-post-id' ){
+				echo $post_id;
+			}
+		}
 
 		/*
 		 * Instance methods
@@ -353,6 +355,9 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 
 			add_action( 'init',                     array( $this, 'init' ) );
 			add_action( 'wp_json_server_before_serve', __CLASS__ . '::yd_api_init' );
+
+			add_filter('manage_edit-'.self::POST_TYPE_SLUG.'_columns', __CLASS__ . '::custom_post_columns');
+			add_action('manage_'.self::POST_TYPE_SLUG.'_posts_custom_column', __CLASS__ . '::custom_post_columns_data', 10, 2);
 
 			add_shortcode( self::POST_TYPE_SLUG, __CLASS__ . '::shortcode' );
 		}
