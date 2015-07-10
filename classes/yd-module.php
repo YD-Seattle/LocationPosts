@@ -93,7 +93,7 @@ if ( ! class_exists( 'YD_Module' ) ) {
 		protected static function render_template( $default_template_path = false, $variables = array(), $require = 'once' ) {
 			do_action( 'yd_render_template_pre', $default_template_path, $variables );
 
-			$template_path = locate_template( basename( $default_template_path ) );
+			$template_path = locate_template( $default_template_path );
 			if ( ! $template_path ) {
 				$template_path = dirname( __DIR__ ) . '/views/' . $default_template_path;
 			}

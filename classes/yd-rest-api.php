@@ -63,16 +63,16 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 						'post_type' => array( YD_LOCATION_CUSTOM_POST::POST_TYPE_SLUG ),
 						'meta_query' => array(
 								array(
-									'key' => YD_LOCATION_CUSTOM_POST::LOCATION_LAT,
-									'value' => array( $bounds[0], $bounds[2] ),
+									'key' 	  => YD_LOCATION_CUSTOM_POST::LOCATION_LAT,
+									'value'   => array( $bounds[0], $bounds[2] ),
 									'compare' => 'BETWEEN',
-									'type' => 'SIGNED'
+									'type'	  => 'SIGNED'
 								),
 								array(
-									'key' => YD_LOCATION_CUSTOM_POST::LOCATION_LNG,
-									'value' => array( $bounds[1], $bounds[3] ),
+									'key' 	  => YD_LOCATION_CUSTOM_POST::LOCATION_LNG,
+									'value'   => array( $bounds[1], $bounds[3] ),
 									'compare' => 'BETWEEN',
-									'type' => 'SIGNED'
+									'type' 	  => 'SIGNED'
 								)
 							)
 					);
@@ -101,11 +101,11 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 			$post_query = new WP_Query();
 			$posts_list = $post_query->query( $query );
 
-			$response   = new WP_JSON_Response();
+			$response = new WP_JSON_Response();
 			
 			$results = array( 'posts' => array() );
 			foreach ( $posts_list as $post ) {
-				$results[ 'posts' ][] = self::filter_post_data( $post );
+				$results[ 'posts' ][] = self::attach_post_data( $post );
 			}
 
 			$response->set_data( $results );
@@ -118,24 +118,21 @@ if ( ! class_exists( 'YD_REST_API' ) ) {
 		 *	the meta data.
 		 *	@return array The filtered post data
 		 */
-		private static function filter_post_data( $post_data ) {
+		private static function attach_post_data( $post_data ) {
 			$post = get_object_vars( $post_data );
 			$post[ 'lat' ] = get_post_meta( $post[ 'ID' ], YD_LOCATION_CUSTOM_POST::LOCATION_LAT, true );
 			$post[ 'lng' ] = get_post_meta( $post[ 'ID' ], YD_LOCATION_CUSTOM_POST::LOCATION_LNG, true );
-			return $post;
-
-			$filtered_post = array();
-			$filtered_post[ 'id' ] = $post[ 'ID' ];
-			$filtered_post[ 'title' ] = $post[ 'post_title' ];
-			$filtered_post[ 'type' ] = $post[ 'post_type' ];
-			$filtered_post[ 'content' ] = $post[ 'post_content' ];
-			$filtered_post[ 'lat' ] = get_post_meta( $post[ 'ID' ], YD_LOCATION_CUSTOM_POST::LOCATION_LAT, true );
-			$filtered_post[ 'lng' ] = get_post_meta( $post[ 'ID' ], YD_LOCATION_CUSTOM_POST::LOCATION_LNG, true );
+			if ( function_exists( 'get_fields' ) ) {  // ACF
+				// Check if there are any acf fields, if so attach them to the post data.
+				$fields = get_fields( $post['ID'] );
+				$post[ 'custom_fields' ] = $fields;	
+			}
 			if ( has_post_thumbnail( $post[ 'ID' ] ) ) {
 				$image = wp_get_attachment_image_src( get_post_thumbnail_id( $post[ 'ID' ] ), 'single-post-thumbnail' )[0];
-				$filtered_post[ 'img' ] = $image;
+				$post[ 'img' ] = $image;
 			}
-			return $filtered_post;
+			
+			return $post;
 		}
 
 		/**

@@ -4,6 +4,9 @@
 function ydWrapper( $, YDLocationPosts ) {
 	// What type of location map are we generating?
 	var type = $('#yd-maps-container').attr('data-query-type');
+	// Compile the handlebars template once
+	var source   = $("#yd-location-post-template").html();
+	var template = Handlebars.compile(source);
 
 	// Setup the map with stored lat lng values
 	var mapOptions = {
@@ -48,21 +51,15 @@ function ydWrapper( $, YDLocationPosts ) {
 		var newMarker = new google.maps.Marker({
 			position: new google.maps.LatLng( post.lat, post.lng ),
 			map: map,
-			title: post.title
+			title: post.title,
+			post_data: post
 		});
 		// Attach the event handler for the marker
-		google.maps.event.addListener( newMarker, 'click', function( event ) {
+		google.maps.event.addListener( newMarker, 'click', function() {
 			// TODO: modal time
-			alert('Dont touch that.');
+			$('#yd-maps-container').append( template(this.post_data) );
 		});
 		return newMarker;
-	}
-
-	function clearMarkers() {
-		markers.forEach( function( marker ) {
-			marker.setMap( null );
-		});
-		markers = [];
 	}
 	
 }

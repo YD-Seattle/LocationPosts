@@ -23,9 +23,17 @@ Show only posts with the given ids
 [yd-location-post q='post_ids' post_ids='23, 25']
 ```
 
+Location Taxonomies: you can now add taxonomies to any of the above queries using the `location_taxonomies` parameter.
+```
+[yd-location-post q='all' location_taxonomies='seattle-region']
+[yd-location-post q='bounds' bounds='-34.1,-180,90,180' location_taxonomies='portland-region']
+```
 
 Available paramets:
 - q: 'all', 'bounds', 'post_ids'
 - bounds: (Comma seperated list of coordinates in format sw_lat, sw_lng, ne_lat, ne_lng. Ex: '-34.1,-180,90,180' )
 - post_ids: (Comma seperated list of `Location Post` ids. Ex: '23,25,29' )
 - location_taxonomies: (Comma seperated list of `Location Taxonomy` slugs. Ex: 'seattle-region,sanfransisco-region') (assuming those Location Taxonmies were created!)
+
+## Theme Customization
+TODO

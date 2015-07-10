@@ -245,9 +245,8 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 		}
 
 		/**
-		 * Defines the [POST_TYPE_SLUG] shortcode
-		 *
-		 * @mvc Controller
+		 * Defines the [POST_TYPE_SLUG] shortcode. Essentially we get the scripts and data that will
+		 * be sent to the front end.
 		 *
 		 * @param array $attributes
 		 * @return string
@@ -255,9 +254,21 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 		public static function shortcode( $attributes ) {
 			$attributes = apply_filters( 'yd-shortcode-attributes', $attributes );
 			$attributes = self::validate_shortcode_attributes( $attributes );
-			
 
-			// Include the javascript and the styling for the shortcode
+			// Check if handlebars is included, if not add
+			if ( wp_script_is( 'handlebars', 'enqueued' ) ) {
+				return;
+			} else {
+				wp_register_script(
+					self::PREFIX . 'handlebars',
+					plugins_url( 'javascript/handlebars.min.js', dirname( __FILE__ ) . '../' ),
+					array(),
+					self::VERSION,
+					true
+				);
+				wp_enqueue_script( self::PREFIX . 'handlebars' );
+			}
+
 			wp_register_script(
 				self::PREFIX . 'shortcode',
 				plugins_url( 'javascript/yd-shortcode.js', dirname( __FILE__ ) . '../' ),
@@ -276,8 +287,9 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 			);
 			wp_enqueue_style( self::PREFIX . 'shortcode' );
 			
+			$handlebars_template = self::render_template( 'yd-location-post/location-post-template.php' );
 
-			return self::render_template( 'yd-location-post/shortcode.php', array( 'attributes' => $attributes ) );
+			return $handlebars_template . self::render_template( 'yd-location-post/shortcode.php', array( 'attributes' => $attributes ) );
 		}
 
 		/**

@@ -4,11 +4,11 @@
 	if ( $mapsApiKey != null && $mapsApiKey != '' ) :
 ?>
 	<p>Select a location. Update the location by dragging the marker or selecting a location from the search box.</p>
-	<div id="yd-maps-container" data-api-key="<?= $mapsApiKey ?>">
+	<div id="yd-maps-container" data-api-key="<?php echo esc_attr_e( $mapsApiKey ); ?>">
 		<input id="yd-map-search" class="controls" type="text" placeholder="Search Box">
 		<div id="yd-map-canvas"></div>
-		<input id="yd-location-lat" name="yd-location-lat" type="hidden" value="<?php echo $variables['yd-location-lat']; ?>" />
-		<input id="yd-location-lng" name="yd-location-lng" type="hidden" value="<?php echo $variables['yd-location-lng']; ?>" />
+		<input id="yd-location-lat" name="yd-location-lat" type="hidden" value="<?php echo esc_attr_e( $variables['yd-location-lat'] ); ?>" />
+		<input id="yd-location-lng" name="yd-location-lng" type="hidden" value="<?php echo esc_attr_e( $variables['yd-location-lng'] ); ?>" />
 		<div class="yd-warning-container"><input type="submit" name="save" id="save-post-location" value="Save Changes" class="button"></div>
 	</div>
 <?php else: ?>
