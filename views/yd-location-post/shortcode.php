@@ -12,3 +12,15 @@
 	<div id="yd-map-canvas"></div>
 	<div id="yd-maps-loading"></div>
 </div>
+<div class="modal fade" id="yd-modal" tabindex="-1" role="dialog">
+	<div class="yd-modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<!-- This is where the goods go =) -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

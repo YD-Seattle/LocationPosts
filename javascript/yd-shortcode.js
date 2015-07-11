@@ -56,8 +56,8 @@ function ydWrapper( $, YDLocationPosts ) {
 		});
 		// Attach the event handler for the marker
 		google.maps.event.addListener( newMarker, 'click', function() {
-			// TODO: modal time
-			$('#yd-maps-container').append( template(this.post_data) );
+			$('#yd-modal .modal-body').html( template(this.post_data) );
+			$('#yd-modal').modal('show');
 		});
 		return newMarker;
 	}

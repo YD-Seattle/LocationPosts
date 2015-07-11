@@ -30,3 +30,17 @@
 	background-position: center;
 	background-image: url('../images/loading.gif');
 }
+
+#yd-modal .yd-modal-dialog {
+	width: 60%;
+	margin: auto;
+}
+
+#yd-modal .modal-content {
+	border-radius: 0px;
+}
+
+.modal-open {
+	overflow: auto !important;
+	padding-right: 0px !important; /* Prevent modal from moving content left (stupid bootstrap) */
+}

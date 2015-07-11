@@ -163,7 +163,7 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 				case self::LOCATION_META_ID:
 					$variables[ self::LOCATION_LAT ] = get_post_meta( $post->ID, self::LOCATION_LAT, true );
 					$variables[ self::LOCATION_LNG ] = get_post_meta( $post->ID, self::LOCATION_LNG, true );
-					$view                         = self.POST_TYPE_SLUG.'/location-meta-box.php';
+					$view                         = self::POST_TYPE_SLUG.'/location-meta-box.php';
 					break;
 
 				default:
@@ -242,29 +242,47 @@ if ( ! class_exists( 'YD_LOCATION_CUSTOM_POST' ) ) {
 			$attributes = apply_filters( 'yd-shortcode-attributes', $attributes );
 			$attributes = self::validate_shortcode_attributes( $attributes );
 
-			// Check if handlebars is included, if not add
+			// Handlebars
 			if ( wp_script_is( 'handlebars', 'enqueued' ) ) {
 				return;
 			} else {
 				wp_register_script(
-					self::PREFIX . 'handlebars',
+					'handlebars',
 					plugins_url( 'javascript/handlebars.min.js', dirname( __FILE__ ) . '../' ),
 					array(),
 					self::VERSION,
 					true
 				);
-				wp_enqueue_script( self::PREFIX . 'handlebars' );
+				wp_enqueue_script( 'handlebars' );
 			}
 
+			// Bootstrap (min version has only required parts for the modal)
 			wp_register_script(
-				self::PREFIX . 'shortcode',
+				self::PREFIX . '_bootstrap-modal',
+				plugins_url( 'javascript/bootstrap.min.js', dirname( __FILE__ ) . '../' ),
+				array( 'jquery' ),
+				self::VERSION,
+				true
+			);
+			wp_enqueue_script( self::PREFIX . '_bootstrap-modal' );
+			wp_register_style(
+				self::PREFIX . '_bootstrap-modal',
+				plugins_url( 'css/bootstrap.min.css', dirname( __FILE__ ) . '../' ),
+				array(),
+				self::VERSION,
+				'all'
+			);
+			wp_enqueue_style( self::PREFIX . '_bootstrap-modal' );
+
+			// Our plugins files
+			wp_register_script(
+				self::PREFIX . '_shortcode',
 				plugins_url( 'javascript/yd-shortcode.js', dirname( __FILE__ ) . '../' ),
 				array( 'jquery' ),
 				self::VERSION,
 				true
 			);
-			wp_enqueue_script( self::PREFIX . 'shortcode' );
-
+			wp_enqueue_script( self::PREFIX . '_shortcode' );
 			wp_register_style(
 				self::PREFIX . 'shortcode',
 				plugins_url( 'css/shortcode.css', dirname( __FILE__ ) . '../' ),
