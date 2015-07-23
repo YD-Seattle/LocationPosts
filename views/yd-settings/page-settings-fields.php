@@ -10,6 +10,6 @@
 	?>
 
 	<input id="<?php esc_attr_e( 'yd_settings[required][yd-google-maps-api-key]' ); ?>" name="<?php esc_attr_e( 'yd_settings[required][yd-google-maps-api-key]' ); ?>" class="regular-text" value="<?php esc_attr_e( $mapsApiKey ); ?>" />
-	<span class="example"> <a href="https://console.developers.google.com//flows/enableapi?apiid=maps_backend&keyType=CLIENT_SIDE&reusekey=true">Need Help?</a> </span>
+	<span class="example"> <a href="https://console.developers.google.com//flows/enableapi?apiid=maps_backend&keyType=CLIENT_SIDE&reusekey=true" target="_blank">Need Help?</a> </span>
 
 <?php endif; ?>
