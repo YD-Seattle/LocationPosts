@@ -20,7 +20,7 @@ A great example would be a real estate website. Assume they want to show a listi
 Download this repository and extract the contents into your WordPress plugins directory (`/wp-content/plugins/yd-location-posts`). Or from your plguins directory run the following command:
 ```
 cd /location/to/wp-content/plugins
-git clone https://github.com/YD-Seattle/YDLocationPosts.git yd-location-post
+git clone https://github.com/YD-Seattle/YDLocationPosts.git yd-location-posts
 ```
 This plugin has a dependency, so you will also have to install the WP REST API plugin found [here](https://github.com/WP-API/WP-API/tree/1.2.2) or through WordPress's plugin manager (search for `WP REST API (WP API)` ). Note the version of WP REST API must be **v1.2.2** (not 2.0).
 
