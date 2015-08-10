@@ -1,6 +1,6 @@
 # Location Posts - A Y-Designs WordPress Plugin
 
-The Location Posts plugin is a simple, yet flexible WordPress plugin that ties location based information to a map. You can insert a map within any existing page or post, and also choose which Location Posts you would like to have displayed on the map. This can be something as simple as displaying all of your Location Posts on a map. A more complex example would be displaying only those posts that lie within a geographical bound.
+The Location Posts plugin is a simple yet flexible WordPress plugin that ties location based information to a map. You can insert a map within any existing page or post (using shortcodes), and also choose which Location Posts you would like to have displayed on the map. This can be something as simple as displaying all of your Location Posts on a map. A more complex example would be displaying only those posts that lie within a geographical bound.
 
 ##### [- Getting Started](#user-content-getting-started--installation)
 ##### [- How to Use](#user-content-how-to-use)
@@ -22,7 +22,7 @@ Download this repository and extract the contents into your WordPress plugins di
 cd /location/to/wp-content/plugins
 git clone https://github.com/YD-Seattle/YDLocationPosts.git yd-location-post
 ```
-This plugin has a dependency, so you will also have to install the WP REST API plugin found [here](https://github.com/WP-API/WP-API/tree/1.2.2) or through WordPress's plugin manager (search for `WP REST API (WP API)`). Note the version of WP REST API must be **v1.2.2** (not 2.0).
+This plugin has a dependency, so you will also have to install the WP REST API plugin found [here](https://github.com/WP-API/WP-API/tree/1.2.2) or through WordPress's plugin manager (search for `WP REST API (WP API)` ). Note the version of WP REST API must be **v1.2.2** (not 2.0).
 
 Once both plugins are installed, active that WP REST API plugin and then active that YD Location Posts plugin. Your plugins screen should look something like this:
 
