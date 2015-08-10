@@ -17,7 +17,7 @@ A great example would be a real estate website. Assume they want to show a listi
 
 ## Getting Started / Installation
 
-Download this repository and extract the contents into your WordPress plugins directory (`/wp-content/plugins/yd-location-posts`). Or from your plguins directory run the following command:
+Download the latest release ([v0.1](https://github.com/YD-Seattle/YDLocationPosts/raw/releases/yd-location-posts-v0.1.zip)) or clone this repository. Move the contents into your WordPress plugins directory (`/wp-content/plugins/yd-location-posts`). Or run the following command:
 ```
 cd /location/to/wp-content/plugins
 git clone https://github.com/YD-Seattle/YDLocationPosts.git yd-location-posts
